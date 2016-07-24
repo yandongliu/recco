@@ -18,7 +18,7 @@ def ensure_dir(f):
         print 'making dir', d
         os.makedirs(d)
 
-def getVidFolderPrefix(vid):
+def _getVidFolderPrefix(vid):
     if len(vid) > 2:
         prefix = vid[:2]
         return prefix
@@ -26,36 +26,49 @@ def getVidFolderPrefix(vid):
         return vid
 
 def saveHTMLToDisk(vid, html):
-    fn = '{}/{}/{}.html'.format(HTML_DIR, getVidFolderPrefix(vid), vid)
+    fn = '{}/{}/{}.html'.format(HTML_DIR, _getVidFolderPrefix(vid), vid)
     ensure_dir(fn)
     with open(fn, 'w') as f:
         f.write(html)
 
 def loadHTMLFromDisk(vid):
     s = None
-    with open('{}/{}/{}.html'.format(HTML_DIR, getVidFolderPrefix(vid), vid), 'r') as f:
+    with open('{}/{}/{}.html'.format(HTML_DIR, _getVidFolderPrefix(vid), vid), 'r') as f:
         s = f.read()
     return s
 
-def saveToDisk(vid, videos):
-    fn = '{}/{}/{}.txt'.format(VIEW_DIR, getVidFolderPrefix(vid), vid)
+def saveViewsToDisk(vid, videos):
+    """Save video's co-views to disk
+    :param [(vid, title, view-count)] videos:
+    """
+    fn = '{}/{}/{}.txt'.format(VIEW_DIR, _getVidFolderPrefix(vid), vid)
     ensure_dir(fn)
     with open(fn, 'w') as f:
-        for v_, t_ in videos:
-            print v_, t_
-            f.write('{};;{}\n'.format(v_, t_.encode('utf8')))
+        for v_, t_, c_ in videos:
+            print v_, t_, c_
+            f.write('{};;{};;{}\n'.format(v_, t_.encode('utf8'), c_))
 
-def loadFromDisk(vid):
+def saveVideoMetas(metas):
+    """Save video metas for disk
+    :param dict(video, [title, count]) metas"""
+    fn = '{}/{}.txt'.format(DATA_DIR, 'video_meta.txt')
+    with open(fn, 'w') as f:
+        for vid in metas:
+            title, count = metas[vid]
+            f.write('{};;{};;{}\n'.format(vid, title.encode('utf8'), count))
+
+def loadViewsFromDisk(vid):
+    """Load co-views for a video id"""
     ret = []
-    with open('{}/{}/{}.txt'.format(VIEW_DIR, getVidFolderPrefix(vid), vid), 'r') as f:
+    with open('{}/{}/{}.txt'.format(VIEW_DIR, _getVidFolderPrefix(vid), vid), 'r') as f:
         for l in f.read().strip().split('\n'):
-            print '-'*10, l
+            # print '-'*10, l
             v, t = l.strip().split(';;', 1)
             ret.append((v,t))
     return ret
 
 def doesVidExist(vid):
-    path = '{}/{}/{}.txt'.format(VIEW_DIR, getVidFolderPrefix(vid), vid)
+    path = '{}/{}/{}.txt'.format(VIEW_DIR, _getVidFolderPrefix(vid), vid)
     return os.path.isfile(path) 
 
 def downloadFromUrl(url):
@@ -80,4 +93,4 @@ def waitRandomly(x=5, y=20):
 
 
 if __name__ == '__main__':
-    print loadFromDisk('0KSOMA3QBU0')
+    print loadViewsFromDisk('0KSOMA3QBU0')
