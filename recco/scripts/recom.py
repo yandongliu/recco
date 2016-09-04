@@ -41,8 +41,12 @@ def loadAllVideos():
 
 
 if __name__ == '__main__':
-    x_coviews = loadAllVideos()
-    print x_coviews['BJb1aQaDLz4']
+    vid = 'RgKAFK5djSk'
+    x_vid, x_title = util.loadVideoMetas()
+    print x_vid[vid]
+    # print len(x_vid)
+    print util.loadViewsFromDisk(vid)
+    # print len(x_title)
     # for vid in x_coviews:
     #    print vid, x_coviews[vid]
 

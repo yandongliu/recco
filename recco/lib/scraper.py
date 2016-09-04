@@ -12,14 +12,19 @@ class Scraper(object):
             vid = self.queue.pop(0)
             if util.doesVidExist(vid):
                 print 'video exists', vid
-                videos = util.loadViewsFromDisk(vid)
+                vids = util.loadViewsFromDisk(vid)
+                print vids
             else:
                 print 'downloading video', vid
                 html = util.downloadForVideo(vid)
                 videos = Youtube.parseYoutubePage(html)
                 if videos:
-                    util.saveViewsToDisk(vid, videos)
+                    util.saveViewsToDisk(vid, vids)
                     util.waitRandomly()
-            for v, _ in videos:
+                vids = []
+                for v in videos:
+                    vids.append(v[0])
+            print vids
+            for v in vids:
                 if v not in self.queue:
                     self.queue.append(v)

@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import sys
 import random
@@ -39,32 +40,53 @@ def loadHTMLFromDisk(vid):
 
 def saveViewsToDisk(vid, videos):
     """Save video's co-views to disk
-    :param [(vid, title, view-count)] videos:
+    :param [vid] videos:
     """
     fn = '{}/{}/{}.txt'.format(VIEW_DIR, _getVidFolderPrefix(vid), vid)
     ensure_dir(fn)
     with open(fn, 'w') as f:
-        for v_, t_, c_ in videos:
-            print v_, t_, c_
-            f.write('{};;{};;{}\n'.format(v_, t_.encode('utf8'), c_))
+        for v_ in videos:
+            # print v_, t_, c_
+            # f.write('{};;{};;{}\n'.format(v_, t_.encode('utf8'), c_))
+            f.write('{}\n'.format(v_))
 
 def saveVideoMetas(metas):
     """Save video metas for disk
     :param dict(video, [title, count]) metas"""
-    fn = '{}/{}.txt'.format(DATA_DIR, 'video_meta.txt')
+    fn = '{}/{}'.format(DATA_DIR, 'video_meta.txt')
     with open(fn, 'w') as f:
         for vid in metas:
             title, count = metas[vid]
             f.write('{};;{};;{}\n'.format(vid, title.encode('utf8'), count))
 
+def loadVideoMetas():
+    fn = '{}/{}'.format(DATA_DIR, 'video_meta.txt.txt')
+    x = {}
+    x_title = defaultdict(list)
+    with open(fn, 'r') as f:
+        for l in f:
+            eles = l.strip('\n').split(';;')
+            vid = eles[0]
+            count = eles[-1]
+            title = ';;'.join(eles[1:-1])
+            if len(eles) > 3:
+                print title
+            # vid, title, count = l.strip('\n').split(';;')
+            x[vid] = (title, count)
+            x_title[title].append(vid)
+    return x, x_title
+
 def loadViewsFromDisk(vid):
-    """Load co-views for a video id"""
+    """Load co-views for a video id
+    :return: [vid]
+    """
     ret = []
     with open('{}/{}/{}.txt'.format(VIEW_DIR, _getVidFolderPrefix(vid), vid), 'r') as f:
         for l in f.read().strip().split('\n'):
             # print '-'*10, l
-            v, t = l.strip().split(';;', 1)
-            ret.append((v,t))
+            # TODO
+            v = l.strip().split(';;')
+            ret.append(v[0])
     return ret
 
 def doesVidExist(vid):
@@ -72,6 +94,7 @@ def doesVidExist(vid):
     return os.path.isfile(path) 
 
 def downloadFromUrl(url):
+    print url
     response = urllib2.urlopen(url)
     html = response.read()
     return html

@@ -4,7 +4,6 @@ import os
 from os import path
 from subprocess import call
 import sys
-print sys.path
 sys.path.append('/home/yandong/projects/youtube')
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 

@@ -12,13 +12,18 @@ class Youtube(object):
 
     @classmethod
     def parseYoutubePage(cls, html):
-        """Parse HTML content and return [(vid, title, view_count)]"""
+        """Parse HTML content
+        :return: [(vid, title, view_count)]
+        """
         ret = []
         parsed_html = BeautifulSoup(html, "html.parser")
         views = parsed_html.find_all('a', class_='spf-link')
         for v in views:
             if 'content-link' in v['class']:
-                view_count = v.find('span', class_='view-count').text[0:-6]
+                view_span = v.find('span', class_='view-count')
+                if not view_span:
+                    continue
+                view_count = view_span.text[0:-6]
                 m = re.match(p_vid, v['href'])
                 if m:
                     ret.append((m.group(1), v['title'], view_count))

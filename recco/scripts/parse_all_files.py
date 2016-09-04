@@ -16,16 +16,18 @@ def run():
             vid = f[:-5]
             print vid
             html = util.loadHTMLFromDisk(vid)
-            youtube.Youtube.parseYoutubePage(html)
+            videos = youtube.Youtube.parseYoutubePage(html)
+            util.saveViewsToDisk(vid, videos)
             cnt += 1
-            if cnt % 100 == 0:
+            if cnt % 1000 == 0:
                 print cnt
+                util.saveVideoMetas(youtube.x_video_meta)
     # print youtube.x_video_meta
     util.saveVideoMetas(youtube.x_video_meta)
 
 def debug(vid):
     html = util.loadHTMLFromDisk(vid)
-    print html
+    # print html
     youtube.Youtube.parseYoutubePage(html)
 
 if __name__ == '__main__':
